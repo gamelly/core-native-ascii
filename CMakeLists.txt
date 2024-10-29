@@ -134,6 +134,9 @@ endif()
 # Game
 string(LENGTH "${GAME}" GAME_LENGTH)
 set(GAME_HEADER "${CMAKE_SOURCE_DIR}/vendor/game/bytecode.h")
+if ((NOT DEFINED GAME AND NOT EXISTS ${GAME_HEADER}) OR (DEFINED GAME AND NOT GAME_LENGTH))
+    file(WRITE ${GAME_HEADER} "const unsigned char* game_bytecode_lua = NULL;\nconst unsigned int game_bytecode_lua_len = 0;")
+endif()
 if(DEFINED GAME AND GAME_LENGTH)
     if(NOT EXISTS ${GAME})
         message(FATAL_ERROR "game not found: ${GAME}")
@@ -218,15 +221,6 @@ FetchContent_Declare(
     BINARY_DIR "${CMAKE_BINARY_DIR}/CMakeFiles/_deps/curl-build"
 )
 FetchContent_MakeAvailable(lib_curl)
-
-# Lua perfomance
-if(LUA_OPTMIZE)
-    execute_process(
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/vendor/engine"
-        COMMAND ${LUAC} src/cli/main.lua fs-replace ${LUA_PATH}/luaconf.h ${LUA_PATH}/luaconf.h
-            --format "#define%sLUA_32BITS%s%d" --replace "#define LUA_32BITS 1"
-    )
-endif()
 
 target_link_libraries(${PROJECT_NAME} CURL::libcurl)
 target_link_libraries(${PROJECT_NAME} lua-static)
