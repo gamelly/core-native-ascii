@@ -20,8 +20,8 @@ main() {
     lua_pcall(L, 0, 0, 0);
 
     lua_getglobal(L, "native_callback_init");
-    lua_pushnumber(L, 80);
-    lua_pushnumber(L, 24);
+    lua_pushnumber(L, width);
+    lua_pushnumber(L, height);
 
     luaL_loadbuffer(L, (const char *)game_bytecode_lua, game_bytecode_lua_len, "game");
     lua_pcall(L, 0, 1, 0);
@@ -29,6 +29,7 @@ main() {
     tui_lua_check_error(L);
 
     while (1) {
+        native_keys_update(L);
         lua_getglobal(L, "native_callback_loop");
         lua_pushnumber(L, 16);
         lua_pcall(L, 1, 0, 0);

@@ -10,6 +10,7 @@
 #define delay(ms) Sleep(ms)
 #else
 #include <termios.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #define delay(ms) usleep((ms) * 1000)
@@ -25,6 +26,7 @@
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
 
+void native_keys_update(lua_State* L);
 
 void native_draw_install(lua_State* L);
 

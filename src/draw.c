@@ -72,23 +72,28 @@ static int
 native_draw_rect(lua_State *L) {
     tui_lua_check_top(L, 5);
 
-    int mode = luaL_checkinteger(L, 1);     
-    uint16_t x = (uint16_t) luaL_checknumber(L, 2);
-    uint16_t y = (uint16_t) luaL_checknumber(L, 3); 
-    uint16_t w = (uint16_t) luaL_checknumber(L, 4); 
-    uint16_t h = (uint16_t) luaL_checknumber(L, 5);
+    int mode = luaL_checkinteger(L, 1);
+    uint16_t x = (uint16_t)luaL_checknumber(L, 2);
+    uint16_t y = (uint16_t)luaL_checknumber(L, 3);
+    uint16_t w = (uint16_t)luaL_checknumber(L, 4);
+    uint16_t h = (uint16_t)luaL_checknumber(L, 5);
+
+    if (w == 0) {
+        w = 1;
+    }
+    if (h == 0) {
+        h = 1;
+    }
 
     for (uint16_t row = 0; row < h; row++) {
-        terminal_main_pos += sprintf(&terminal_main_buffer[terminal_main_pos], "\x1b[%d;%dH\x1b[48;5;%dm", 
-                             row + y, x, current_color_tint);
-        memset(&terminal_main_buffer[terminal_main_pos],' ', 1);
+        terminal_main_pos += sprintf(&terminal_main_buffer[terminal_main_pos], "\x1b[%d;%dH", row + y, x, current_color_tint);
+        memset(&terminal_main_buffer[terminal_main_pos], '#', 1);
         terminal_main_pos += 1;
     }
-    terminal_main_pos += sprintf(&terminal_main_buffer[terminal_main_pos], "\x1b[48;5;%dm", current_color_clear);
-    
+    // terminal_main_pos += sprintf(&terminal_main_buffer[terminal_main_pos], "\x1b[48;5;%dm", current_color_clear);
+
     return 0;
 }
-
 
 /**
  * @short @c std.draw.line
@@ -131,14 +136,13 @@ native_draw_font(lua_State *L) {
  */
 static int
 native_draw_text(lua_State *L) {
-    const char* text = NULL;
+    const char *text = NULL;
     if (lua_gettop(L) == 3) {
-        uint16_t x = (uint16_t) luaL_checknumber(L, 1);
-        uint16_t y = (uint16_t) luaL_checknumber(L, 2);
+        uint16_t x = (uint16_t)luaL_checknumber(L, 1);
+        uint16_t y = (uint16_t)luaL_checknumber(L, 2);
         text = luaL_checkstring(L, 3);
-        terminal_main_pos += sprintf(&terminal_main_buffer[terminal_main_pos], "\x1b[%d;%dH\x1b[38;5;%dm%s", 
-        y, x, current_color_tint, text);
-
+        terminal_main_pos +=
+          sprintf(&terminal_main_buffer[terminal_main_pos], "\x1b[%d;%dH\x1b[38;5;%dm%s", y, x, current_color_tint, text);
     }
     return 0;
 }

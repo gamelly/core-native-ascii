@@ -1,5 +1,15 @@
 #include "zeebo.h"
 
+void
+tui_exit() {
+#ifndef _WIN32
+    static struct termios t;
+    tcgetattr(STDIN_FILENO, &t);
+    t.c_lflag |= (ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t);
+#endif
+}
+
 /**
  * @par[out] width number of cols
  * @par[out] height number of rows
@@ -46,12 +56,14 @@ tui_clear() {
 void
 tui_signal(int sig) {
     tui_clear();
+    tui_exit();
     exit(sig == SIGTERM);
 }
 
 void
 tui_error(const char *txt1, const size_t len1, const char *txt2) {
     tui_clear();
+    tui_exit();
     write(2, txt1, len1);
     if (txt2) {
         write(2, txt2, strlen(txt2));
@@ -78,6 +90,7 @@ tui_lua_check_error(lua_State *L) {
 
 void
 tui_init() {
+    static char txt[] = "\x1b[0m\x1b[H";
 #ifdef SIGINT
     signal(SIGINT, tui_signal);
 #endif
@@ -92,5 +105,17 @@ tui_init() {
 #endif
 #ifdef SIGHUP
     signal(SIGHUP, tui_signal);
+#endif
+
+#ifndef _WIN32
+    static struct termios t;
+    tcgetattr(STDIN_FILENO, &t);
+    t.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t);
+
+    fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+
+    write(STDOUT_FILENO, txt, sizeof(txt));
+    write(STDERR_FILENO, txt, sizeof(txt));
 #endif
 }

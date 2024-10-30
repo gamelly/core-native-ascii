@@ -222,6 +222,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(lib_curl)
 
+if(LUA_OPTMIZE)
+    execute_process(
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/vendor/engine"
+        COMMAND ${LUAC} src/cli/main.lua fs-replace ${LUA_PATH}/luaconf.h ${LUA_PATH}/luaconf.h
+            --format "#define%sLUA_32BITS%s%d" --replace "#define LUA_32BITS 1"
+    )
+endif()
+
 target_link_libraries(${PROJECT_NAME} CURL::libcurl)
 target_link_libraries(${PROJECT_NAME} lua-static)
 target_link_libraries(${PROJECT_NAME} lua_cjson-static)
