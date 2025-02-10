@@ -2,8 +2,6 @@
 
 static uint8_t previous_font_size = 2;
 static uint8_t font_size = 2;
-static uint8_t text_index = 0;
-static const char *text_list[255];
 
 static int native_text_mock(lua_State *L)
 {
@@ -15,8 +13,8 @@ static int native_text_print(lua_State *L)
 {
     uint8_t x = luaL_checknumber(L, 1);
     uint8_t y = luaL_checknumber(L, 2);
-    text_list[++text_index] = luaL_checkstring(L, 3);
-    //psx_draw_text(text, x, y + 1);
+    uint8_t text_index = tui_queue_push_text(luaL_checkstring(L, 3));
+    tui_queue_push(52, x, y, text_index, font_size);
     lua_settop(L, 0);
     return 2;
 }
@@ -45,11 +43,6 @@ static int native_text_font_previous(lua_State *L)
     font_size = previous_font_size;
     lua_settop(L, 0);
     return 0;
-}
-
-void native_text_reset()
-{
-    text_index = 0;
 }
 
 void native_text_install(lua_State* L)

@@ -46,9 +46,9 @@ void engine_update(app_t *const self)
 {
     self->out.len = 0;
     concat(self, out, "\x1B[3J\x1B[H\x1B[2J");
-    native_text_reset();
     native_keys_update(self->L, native_callback_keyboard);
     native_loop_update(self->L, native_callback_loop, FPS_DELTA);
     native_draw_update(self->L, native_callback_draw);
     tui_queue_burn(self);
+    concat(self, out, "\x1b[0;0H");
 }
