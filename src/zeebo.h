@@ -26,13 +26,58 @@
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
 
-void native_keys_update(lua_State* L);
+#define print(b,l)          write(STDOUT_FILENO,b,l)
+#define concat(s, t, ...)   (s)->t.len+=snprintf((s)->t.msg+(s)->t.len,sizeof((s)->t.msg)-(s)->t.len,##__VA_ARGS__)
 
-void native_draw_install(lua_State* L);
+typedef struct {
+    lua_State *L;
+    struct {
+        bool tty;
+    } started;
+    struct {
+        char msg[256];
+        uint8_t len;
+    } err;
+    struct {
+        char msg[81920];
+        size_t len;
+    } out;
+    struct {
+        uint8_t color;
+        int16_t width;
+        int16_t height;
+        uint8_t background;
+        uint16_t keyboard;
+    } ctx;
+    struct {
+        int16_t width;
+        int16_t height;
+        uint16_t keyboard;
+    } old;
+} app_t;
 
-void tui_init();
-void tui_clear();
-int tui_get_width(uint16_t* width, uint16_t* height);
-void tui_error(const char* txt1, const size_t len1, const char* txt2);
-void tui_lua_check_top_fname(lua_State *L, uint8_t size, const char* function_name);
-void tui_lua_check_error(lua_State *L);
+typedef void (*cmd_t)(app_t *const, int16_t, int16_t, int16_t, int16_t);
+
+void engine_init(app_t *const);
+void engine_update(app_t *const);
+
+bool tui_update(app_t *const);
+void tui_delete(app_t *const);
+
+void tui_draw_mode(app_t *const, int16_t, int16_t, int16_t, int16_t);
+void tui_draw_color(app_t *const, int16_t, int16_t, int16_t, int16_t);
+void tui_draw_rect(app_t *const, int16_t, int16_t, int16_t, int16_t);
+void tui_draw_line(app_t *const, int16_t, int16_t, int16_t, int16_t);
+
+void tui_queue_push(uint8_t, int16_t, int16_t, int16_t, int16_t);
+void tui_queue_burn(app_t *const);
+void tui_termios_start();
+void tui_termios_exit();
+
+
+void native_text_reset();
+void native_text_install(lua_State*);
+void native_draw_install(lua_State*);
+void native_keys_update(lua_State*, int);
+void native_draw_update(lua_State*, int);
+void native_loop_update(lua_State*, int, uint8_t dt);

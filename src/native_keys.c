@@ -42,7 +42,7 @@ static const struct {
 };
 
 void
-native_keys_update(lua_State *L) {
+native_keys_update(lua_State *L, int callback) {
     static bool old_pressed[KEY_COUNT];
     static bool pressed[KEY_COUNT];
     int c;
