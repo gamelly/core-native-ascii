@@ -33,11 +33,13 @@ void tui_queue_burn(app_t *const self)
     while (index < index_cmd) {
         uint8_t cmd = queue_command[index] - 48;
         if (cmd < sizeof(commands) / sizeof(commands[0]) && commands[cmd] != NULL) {
-            uint8_t param_1 = queue_param[param++];
-            uint8_t param_2 = queue_param[param++];
-            uint8_t param_3 = queue_param[param++];
-            uint8_t param_4 = queue_param[param++];
+            int16_t param_1 = queue_param[param++];
+            int16_t param_2 = queue_param[param++];
+            int16_t param_3 = queue_param[param++];
+            int16_t param_4 = queue_param[param++];
             commands[cmd](self, param_1, param_2, param_3, param_4);
+        } else {
+            param += 4;
         }
         index++;
     }

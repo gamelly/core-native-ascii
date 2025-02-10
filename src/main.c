@@ -11,7 +11,7 @@ main() {
         if(self.out.len) {
             print(self.out.msg, self.out.len);
         }
-        delay(100);
+        delay(32);
     }
 
     tui_delete(&self);

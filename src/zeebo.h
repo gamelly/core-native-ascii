@@ -26,6 +26,12 @@
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
 
+#ifndef MIN
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef MAX
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
 #define print(b,l)          write(STDOUT_FILENO,b,l)
 #define concat(s, t, ...)   (s)->t.len+=snprintf((s)->t.msg+(s)->t.len,sizeof((s)->t.msg)-(s)->t.len,##__VA_ARGS__)
 
