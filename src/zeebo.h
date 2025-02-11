@@ -64,7 +64,7 @@ typedef struct {
 
 typedef void (*cmd_t)(app_t *const, int16_t, int16_t, int16_t, int16_t);
 
-void engine_init(app_t *const);
+void engine_init(app_t *const, int argc, char *argv[]);
 void engine_update(app_t *const);
 
 bool tui_update(app_t *const);

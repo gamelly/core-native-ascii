@@ -1,10 +1,10 @@
 #include "zeebo.h"
 
 int
-main() {
+main(int argc, char *argv[]) {
     static app_t self;
     tui_update(&self);
-    engine_init(&self);
+    engine_init(&self, argc, argv);
 
     while(tui_update(&self)) {
         engine_update(&self);
