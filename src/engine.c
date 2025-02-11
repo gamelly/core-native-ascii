@@ -74,7 +74,7 @@ void engine_init(app_t *const self, int argc, char *argv[])
             break;
         }
 
-        if (game_bytecode_lua_len == 0 && !engine_load_file("game.lua", &game.buf, &game.len)) {
+        if (game_bytecode_lua_len == 0 && game.len == 0 && !engine_load_file("game.lua", &game.buf, &game.len)) {
             concat(self, err, "error: copy your game.lua near the executable folder!\n");
             break;
         }
@@ -94,6 +94,8 @@ void engine_init(app_t *const self, int argc, char *argv[])
         luaL_openlibs(self->L);
         native_draw_install(self->L);
         native_text_install(self->L);
+        native_http_install(self->L);
+        native_json_install(self->L);
 
         luaL_loadbuffer(self->L, engine.buf, engine.len, "engine");
         if (lua_pcall(self->L, 0, 0, 0) != LUA_OK) {
@@ -141,9 +143,15 @@ void engine_update(app_t *const self)
 {
     self->out.len = 0;
     concat(self, out, "\x1B[3J\x1B[H\x1B[2J");
-    native_keys_update(self->L, native_callback_keyboard);
-    native_loop_update(self->L, native_callback_loop, FPS_DELTA);
-    native_draw_update(self->L, native_callback_draw);
+    if(native_keys_update(self->L, native_callback_keyboard) != LUA_OK) {
+        concat(self, err, "error: native_callback_keyboard\n%s\n", lua_tostring(self->L, -1));
+    }
+    if(native_loop_update(self->L, native_callback_loop, FPS_DELTA) != LUA_OK) {
+        concat(self, err, "error: native_callback_loop\n%s\n", lua_tostring(self->L, -1));
+    }
+    if(native_draw_update(self->L, native_callback_draw) != LUA_OK) {
+        concat(self, err, "error: native_callback_draw\n%s\n", lua_tostring(self->L, -1));
+    }
     tui_queue_burn(self);
     concat(self, out, "\x1b[0;0H");
 }

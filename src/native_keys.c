@@ -41,7 +41,7 @@ static const struct {
     { 'C', KEY_RIGHT } // clang-format on
 };
 
-void
+int
 native_keys_update(lua_State *L, int callback) {
     static bool old_pressed[KEY_COUNT];
     static bool pressed[KEY_COUNT];
@@ -80,4 +80,5 @@ native_keys_update(lua_State *L, int callback) {
 
     memcpy(old_pressed, pressed, KEY_COUNT);
     memset(pressed, 0, KEY_COUNT);
+    return LUA_OK;
 }

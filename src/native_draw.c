@@ -71,10 +71,10 @@ static int native_draw_image(lua_State *L) {
     return 0;
 }
 
-void native_draw_update(lua_State* L, int callback)
+int native_draw_update(lua_State* L, int callback)
 {
     lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
-    lua_pcall(L, 0, 0, 0);
+    return lua_pcall(L, 0, 0, 0);
 }
 
 void native_draw_install(lua_State* L)

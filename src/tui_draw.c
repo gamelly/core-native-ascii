@@ -17,5 +17,10 @@ void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h
 void tui_draw_text(app_t *const self, int16_t x, int16_t y, int16_t text_id, int16_t text_size)
 {
     text_size = MAX(1, text_size - 1);
-    concat(self, out,  "\x1b[%d;%dH\x1B[%dm%s\x1B[0m", y, x, text_size == 2 , tui_queue_get_text(text_id));
+    const char* text = tui_queue_get_text(text_id);
+    int16_t pos = 0;
+
+    if (geoclip_text(self, &x, &y, &pos)) {
+        concat(self, out,  "\x1b[%d;%dH\x1B[%dm%s\x1B[0m", y, x, text_size == 2, &text[pos]);
+    }
 }

@@ -11,19 +11,21 @@ static int native_text_mock(lua_State *L)
 
 static int native_text_print(lua_State *L)
 {
-    uint8_t x = luaL_checknumber(L, 1);
-    uint8_t y = luaL_checknumber(L, 2);
-    uint8_t text_index = tui_queue_push_text(luaL_checkstring(L, 3));
+    int16_t x = ceil(luaL_checknumber(L, 1));
+    int16_t y = ceil(luaL_checknumber(L, 2));
+    int16_t text_index = tui_queue_push_text(luaL_checkstring(L, 3));
     tui_queue_push(52, x, y, text_index, font_size);
     lua_settop(L, 0);
-    return 2;
+    return 0;
 }
 
 static int native_text_mensure(lua_State *L)
 {
+    uint8_t s = MIN(1, font_size - 1);
+    const char *text = luaL_checkstring(L, 1);
     lua_settop(L, 0);
-    lua_pushnumber(L, 1);
-    lua_pushnumber(L, 1);
+    lua_pushnumber(L, strlen(text) * s);
+    lua_pushnumber(L, s);
     return 2;
 }
 
