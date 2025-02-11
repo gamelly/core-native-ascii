@@ -16,7 +16,6 @@ void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h
 
 void tui_draw_text(app_t *const self, int16_t x, int16_t y, int16_t text_id, int16_t text_size)
 {
-    text_size = MAX(1, text_size - 1);
     const char* text = tui_queue_get_text(text_id);
     int16_t pos = 0;
 

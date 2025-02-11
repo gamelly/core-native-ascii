@@ -77,6 +77,14 @@ int native_draw_update(lua_State* L, int callback)
     return lua_pcall(L, 0, 0, 0);
 }
 
+int native_draw_resize(lua_State* L, int callback, int16_t width, int16_t height)
+{
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+    lua_pushnumber(L, width);
+    lua_pushnumber(L, height);
+    return lua_pcall(L, 2, 0, 0);
+}
+
 void native_draw_install(lua_State* L)
 {
     int i = 0;

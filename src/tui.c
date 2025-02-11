@@ -3,10 +3,7 @@
 static void tui_update_screen(app_t *const self)
 {
     static struct winsize ws;
-    if (self->old.width == 0) {
-        self->old.width = 80;
-        self->old.height = 24;
-    } else {
+    if (self->ctx.width != 0) {
         self->old.width = self->ctx.width;
         self->old.height = self->ctx.height;
     }
@@ -17,6 +14,10 @@ static void tui_update_screen(app_t *const self)
     else {
         self->ctx.width  = 80;
         self->ctx.height = 24;
+    }
+    if (self->old.width == 0) {
+        self->old.width = self->ctx.width;
+        self->old.height = self->ctx.height;
     }
     if (self->ctx.width < 80 || self->ctx.height < 24) {
         concat(self, err, "error: minimum terminal size 80x24, actual is %dx%d\n", self->ctx.width, self->ctx.height);

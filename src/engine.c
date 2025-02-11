@@ -14,6 +14,7 @@ typedef struct {
 
 static int native_callback_loop;
 static int native_callback_draw;
+static int native_callback_resize;
 static int native_callback_keyboard;
 
 static bool engine_load_file(char *const file_name, char **file_buf, size_t *file_len)
@@ -124,6 +125,9 @@ void engine_init(app_t *const self, int argc, char *argv[])
 
         lua_getglobal(self->L, "native_callback_draw");
         native_callback_draw = luaL_ref(self->L, LUA_REGISTRYINDEX);
+
+        lua_getglobal(self->L, "native_callback_resize");
+        native_callback_resize = luaL_ref(self->L, LUA_REGISTRYINDEX);
         
         lua_getglobal(self->L, "native_callback_keyboard");
         native_callback_keyboard = luaL_ref(self->L, LUA_REGISTRYINDEX);
@@ -145,6 +149,11 @@ void engine_update(app_t *const self)
     concat(self, out, "\x1B[3J\x1B[H\x1B[2J");
     if(native_keys_update(self->L, native_callback_keyboard) != LUA_OK) {
         concat(self, err, "error: native_callback_keyboard\n%s\n", lua_tostring(self->L, -1));
+    }
+    if (self->ctx.width != self->old.width || self->ctx.height != self->old.height) {
+        if(native_draw_resize(self->L, native_callback_resize, self->ctx.width, self->ctx.height) != LUA_OK) {
+            concat(self, err, "error: native_callback_resize\n%s\n", lua_tostring(self->L, -1));
+        }
     }
     if(native_loop_update(self->L, native_callback_loop, FPS_DELTA) != LUA_OK) {
         concat(self, err, "error: native_callback_loop\n%s\n", lua_tostring(self->L, -1));
